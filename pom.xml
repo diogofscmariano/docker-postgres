@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.pentaho</groupId>
+    <artifactId>pentaho-ee-jar-parent-pom</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.pentaho</groupId>
+  <artifactId>docker-postgres</artifactId>
+  <version>8.0-SNAPSHOT</version>
+  
+  <packaging>pom</packaging>
+  <name>${project.artifactId}</name>
+  <description>Parent pom for worker-nodes-ee projects</description>
+  <url>http://www.pentaho.com</url>
+  <scm>
+    <connection>scm:git:git@github.com:pentaho/worker-nodes-ee.git</connection>
+    <developerConnection>scm:git:git@github.com:pentaho/worker-nodes-ee.git</developerConnection>
+    <url>https://github.com/pentaho/worker-nodes-ee</url>
+  </scm>
+  
+  <properties>
+    <docker.registry.url>127.0.0.1:5000</docker.registry.url>
+  </properties>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <configuration>
+          <imageName>${docker.registry.url}/${project.artifactId}:${project.version}</imageName>
+          <imageTags>
+            <imageTag>${project.version}</imageTag>
+          </imageTags>
+          <forceTags>true</forceTags>
+          <dockerDirectory>${basedir}/src/main/resources</dockerDirectory>
+          <resources>
+            <resource>
+              <targetPath>/</targetPath>
+              <directory>${basedir}/src/main/resources</directory>
+            </resource>
+          </resources>
+        </configuration>
+        <executions>
+          <execution>
+            <id>build-and-install-image</id>
+            <phase>install</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>deploy-image</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <imageName>${docker.registry.url}/${project.artifactId}:${project.version}</imageName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
